@@ -120,6 +120,22 @@ def calculate_R2eff(row, T, value='volume'):
     
     return R2eff, R2eff_err, row['fields_inc_ref'][arr_inds]
 
+def estimate_Rex(row,n_endpoints=2):
+    R2eff_init = row['R2eff'][0]
+    R2eff_final = np.mean(row['R2eff'][-n_endpoints:])
+    Rex = R2eff_init - R2eff_final
+
+    if row['larger_err'] == 'duplicates':
+        R2eff_init_err = row['R2eff_dup_err'][0]
+        R2eff_final_err = np.sqrt(np.sum(np.square(row['R2eff_dup_err'][-n_endpoints:])))
+
+    else:
+        R2eff_init_err = row['R2eff_err'][0]
+        R2eff_final_err = np.sqrt(np.sum(np.square(row['R2eff_err'][-n_endpoints:])))
+
+    Rex_err = np.sqrt(R2eff_init_err**2+R2eff_final_err**2)
+    return Rex, Rex_err, R2eff_final, R2eff_final_err    
+
 def plot_peak(row):
     
     os.makedirs('output_plots',exist_ok=True)
@@ -130,7 +146,16 @@ def plot_peak(row):
         plt.errorbar(row['ncyc'], row['R2eff'],yerr=row['R2eff_err'],capsize=2,fmt='.')
     plt.xlabel(r'$\nu_{CPMG}$ (Hz)')
     plt.ylabel(r'$R_{2,eff}$')
-    plt.title('%s\nerr method: %s' % (row['assi'], row['larger_err']))
+
+    plt.axhline(row['R2eff_final'],linestyle=':',zorder=0,color='grey')
+    ax = plt.gca()
+    x0, x1 = ax.get_xlim()
+    plt.fill_between([x0,x1],row['R2eff_final']-row['R2eff_final_err'],\
+        row['R2eff_final']+row['R2eff_final_err'],alpha=0.1, zorder=0, color='grey',linewidth=0)
+
+    ax.set_xlim([x0,x1])
+
+    plt.title('%s, Rex = %.2f ± %.2f /s\nerr method: %s' % (row['assi'], row['Rex'], row['Rex_err'], row['larger_err']))
     plt.savefig('output_plots/%s.pdf' % row['assi'],bbox_inches='tight')
     plt.close()
     
@@ -146,6 +171,27 @@ def plot_both_errs(row):
     plt.savefig('output_plots/both_errs/%s.pdf' % row['assi'],bbox_inches='tight')
     plt.close()
     
+def write_for_chemex(df, filename='test'):
+    '''Write R2eff from dataframe format to input format for fitting in ChemEx
+    
+    Inputs:
+    df: dataframe
+    filename: name of file to write
+    '''
+    
+    os.makedirs('chemex_input_files',exist_ok=True)
+
+    dat[['volume_dup_err','larger_vol_err']] = dat.apply(lambda row: get_largest_error(row,meas='volume',xaxis='fields_inc_ref'), axis=1,result_type='expand')
+
+    for _, row in df.iterrows():
+        with open('chemex_input_files/%s.out' % row['assi'],'w') as f:
+            f.write("#CPMG delay\tVolume\tVolume_err_%s\n"%row['larger_vol_err'])
+            for i, val in enumerate(row['fields_inc_ref']):
+                if row['larger_vol_err'] == 'duplicates':
+                    f.write('%.4E\t%.4E\t%.4E\n' % (val, row['volume'][i], row['volume_dup_err'][i]))
+                else:
+                    f.write('%.4E\t%.4E\t%.4E\n' % (val, row['volume'][i], row['volume_err'][i]))
+
 if __name__=='__main__':
 
     p = ArgumentParser()
@@ -153,6 +199,7 @@ if __name__=='__main__':
                    help="path to output files, i.e. 'out'")
     p.add_argument("-T", type=float,
                    help="cpmg delay in seconds (i.e., 0.04 for 40 ms)")
+    p.add_argument("--write_chemex_input", action='store_true')
 
     args = p.parse_args()
 
@@ -171,6 +218,14 @@ if __name__=='__main__':
     else:
         print('no duplicates found.')
 
+    # estimate Rex based on difference in beginning and end points.
+    dat[['Rex','Rex_err','R2eff_final', 'R2eff_final_err']] = dat.apply(lambda row: estimate_Rex(row), axis=1,result_type='expand')
+
+    # save Rex values to csv
+    dat[['assi','larger_err','Rex','Rex_err']].to_csv('rex_vals.csv',index=False)
+    print('Wrote R_ex values and uncertainties to `rex_vals.csv`')
+
+
     #create plots
     print('Creating plots in output_plots/*pdf ...')
     dat.apply(lambda row: plot_peak(row), axis=1)
@@ -178,10 +233,17 @@ if __name__=='__main__':
     dat.apply(lambda row: plot_both_errs(row), axis=1)
 
     dat.to_json('output_plots/raw_data.json.zip')
-
     print('')
     print('Raw data is in output_plots/raw_data.json.zip')
     print("Reload this in python with `df = pd.read_json('raw_data.json.zip')`")
+
+    if args.write_chemex_input:
+        write_for_chemex(dat)
+        print('Wrote ChemEx input files at `chemex_input_files/*out`')
     print('')
     print('How many peaks used duplicates vs. noise?')
     print(dat.groupby('larger_err').size().to_string())
+
+
+
+
