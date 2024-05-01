@@ -3,11 +3,7 @@ Scripts for processing NMR data
 
 # Error analysis for CPMG data
 
-CPMG experiments often have duplicates performed at a few `ncyc` values. We find the best practice for estimating error is to report
-
-`max(error from duplicates, error from spectrum noise)`
-
-for each peak analyzed. These scripts were created to do this analysis using output from PINT.
+CPMG experiments often have duplicates performed at a few `ncyc` values. It is therefore possible to estimate uncertainty either from between duplicates, or from spectrum signal/noise. We view the best practice for estimating error is to use the larger of the two for each peak analyzed. These scripts were created to do this analysis using output from PINT.
 
 Workflow:
 
