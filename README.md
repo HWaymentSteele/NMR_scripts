@@ -13,6 +13,6 @@ Workflow:
 
 -NB: The current PINT duplicate error processing uses pooled standard deviation across all sets of duplicates at the level of peak volumes / (intensities). However, using pooled standard deviation assumes that the variance across each set of duplicates is the same, which is not necessarily the case.
 
-2. Use `process_CPMG_err.py` or `process_CPMG_err.ipynb` to calculate uncertainties for R2_eff and plot.
+2. Use `process_CPMG_err.py` or `process_CPMG_err.ipynb` to calculate uncertainties for R_2,eff using duplicates, determine whether uncertainty from noise or duplicates are greater, and plot.
 
    -NB: A functionality of PINT is to fit R_2,eff to the Carver-Richards equations to estimate p_B, kex, etc. These scripts do not currently do this.
