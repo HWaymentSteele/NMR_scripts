@@ -1,5 +1,5 @@
 # NMR_scripts
-Scripts for processing NMR data
+Scripts for processing NMR data.
 
 # Error analysis for CPMG data
 
