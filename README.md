@@ -35,4 +35,6 @@ Outputs:
 
 NB: A useful functionality of PINT is to fit R_2,eff to the Carver-Richards equations to estimate p_B, kex, etc. These scripts do not currently do this.
 
-*Jupyter notebook* The `process_CPMG_err.ipynb` notebook contains the same functionality and is my preferred way to interact with the data to allow for more interactive plotting. Recommended usage is to copy a fresh template of the notebook into the PINT output directory and modify the copy further from there.
+### Jupyter notebook
+
+The `process_CPMG_err.ipynb` notebook contains the same functionality and is my preferred way to interact with the data to allow for more interactive plotting. Recommended usage is to copy a fresh template of the notebook into the PINT output directory and modify the copy further from there.
