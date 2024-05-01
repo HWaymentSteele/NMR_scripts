@@ -5,6 +5,7 @@ Scripts for processing NMR data.
 
 CPMG experiments often have duplicates performed at a few `ncyc` values. It is therefore possible to estimate uncertainty either from between duplicates, or from spectrum signal/noise. We view the best practice for estimating error is to use the larger of the two for each peak analyzed. These scripts were created to do this analysis using output from PINT.
 
+Rough overview of supported workflows:
 <img src="https://github.com/HWaymentSteele/NMR_scripts/assets/22597971/a2121be2-8688-4b1b-ab30-17aeb06d375d"  width="60%" >
 
 Workflow:
