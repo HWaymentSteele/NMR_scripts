@@ -7,7 +7,7 @@ CPMG experiments often have duplicates performed at a few `ncyc` values. We find
 
 `max(error from duplicates, error from spectrum noise)`
 
-These scripts were created to do this analysis using output from PINT.
+for each peak analyzed. These scripts were created to do this analysis using output from PINT.
 
 Workflow:
 
