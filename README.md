@@ -3,15 +3,19 @@ Scripts for processing NMR data
 
 # Error analysis for CPMG data
 
-CPMG experiments often have duplicates performed at a few `ncyc` values. We find the best practice for estimating error to be to use
+CPMG experiments often have duplicates performed at a few `ncyc` values. We find the best practice for estimating error is to report
 
-max(error from duplicates, error from spectrum noise)
+`max(error from duplicates, error from spectrum noise)`
+
+These scripts were created to do this analysis using output from PINT.
 
 Workflow:
 
-1. Do processing in PINT using -noiseUncertainty flag to return error estimates from PINT that represent uncertainty 
+1. Do processing in PINT using `-noiseUncertainty` flag in the integration commands to return error estimates from PINT that represent uncertainty.
 
--NB: The current PINT duplicate error processing uses pooled standard deviation across all sets of duplicates at the level of peak volumes / (intensities). However, using pooled standard deviation assumes that the variance across each set of duplicates is the same, which is not necessarily the case.
+NB: The current PINT duplicate error processing uses pooled standard deviation across all sets of duplicates at the level of peak volumes / (intensities). However, using pooled standard deviation assumes that the variance across each set of duplicates is the same, which is not necessarily the case. This script uses the [Mean Absolute Deviation](https://en.wikipedia.org/wiki/Average_absolute_deviation) to represent uncertainty.
+
+One more difference: PINT calculates uncertainty across duplicates _prior_ to calculating R_2,eff from I and I_0. This script estimates error across R_2,eff values _after_ calculating R_2,eff.
 
 2. Use `process_CPMG_err.py` or `process_CPMG_err.ipynb` to calculate uncertainties for R_2,eff using duplicates, determine whether uncertainty from noise or duplicates are greater, and plot.
 
