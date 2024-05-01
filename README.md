@@ -5,6 +5,8 @@ Scripts for processing NMR data.
 
 CPMG experiments often have duplicates performed at a few `ncyc` values. It is therefore possible to estimate uncertainty either from between duplicates, or from spectrum signal/noise. We view the best practice for estimating error is to use the larger of the two for each peak analyzed. These scripts were created to do this analysis using output from PINT.
 
+![process_CPMG_workflow 001](https://github.com/HWaymentSteele/NMR_scripts/assets/22597971/9ed1edd9-3692-440b-93fc-b734764b9daa)
+
 Workflow:
 
 1. Do processing in PINT using `-noiseUncertainty` flag in the integration commands to return error estimates from PINT that represent uncertainty.
@@ -17,7 +19,7 @@ One more difference: PINT calculates uncertainty across duplicates _prior_ to ca
 
 Simplest usage:
 
-`python process_CPMG_err.py /path/to/PINT/out/ -T 0.04`
+`python ../process_CPMG_err.py ../example_data/out -T 0.04 --write_chemex_input`
 
 Would process all *.out files in PINT `out` dir, using a cpmg delay of 40 ms.
 
@@ -28,6 +30,8 @@ Outputs:
 - Plots comparing error at `/output_plots/both_errs/*pdf`
 
 - JSON file with raw data for further use in python: `output_plots/raw_data.json.zip`
+
+- Files formatted for ChemEx using largest error identified in `chemex_input_files/*.out`. NOTE: ChemEx input doesn't take the calculated R_2,eff, but rather the original intensities along with duplicates. This script will do the same routine -- is the duplicate or noise uncertaintly larger -- and pass along those volume uncertainties.
 
 NB: A useful functionality of PINT is to fit R_2,eff to the Carver-Richards equations to estimate p_B, kex, etc. These scripts do not currently do this.
 
