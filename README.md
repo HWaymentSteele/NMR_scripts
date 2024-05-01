@@ -15,4 +15,18 @@ Workflow:
 
 2. Use `process_CPMG_err.py` or `process_CPMG_err.ipynb` to calculate uncertainties for R_2,eff using duplicates, determine whether uncertainty from noise or duplicates are greater, and plot.
 
-   -NB: A functionality of PINT is to fit R_2,eff to the Carver-Richards equations to estimate p_B, kex, etc. These scripts do not currently do this.
+Simplest usage:
+
+`python process_CPMG_err.py /path/to/PINT/out/ -T 0.04`
+
+Would process all *.out files in PINT `out` dir, using a cpmg delay of 40 ms.
+
+Outputs:
+
+- Plots using largest error in `/output_plots/*pdf` using largest error
+
+- Plots comparing error at `/output_plots/both_errs/*pdf`
+
+- JSON file with raw data for further use in python: `output_plots/raw_data.json.zip`
+
+NB: A useful functionality of PINT is to fit R_2,eff to the Carver-Richards equations to estimate p_B, kex, etc. These scripts do not currently do this.
